@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Phone, Calendar } from "lucide-react";
 
@@ -7,7 +8,15 @@ const Header = () => {
 
   const navigation = [
     { name: "Programe", href: "#packages" },
-    { name: "Servicii", href: "#services" },
+    { 
+      name: "Servicii", 
+      href: "#services",
+      submenu: [
+        { name: "Terapii IV", href: "/terapii-iv" },
+        { name: "Dermatologie", href: "/dermatologie" },
+        { name: "Neuromodulare", href: "/neuromodulare" }
+      ]
+    },
     { name: "Evaluări", href: "#assessments" },
     { name: "Despre", href: "#about" },
     { name: "Contact", href: "#contact" },
@@ -39,21 +48,41 @@ const Header = () => {
       {/* Main navigation */}
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
-          <div className="flex items-center">
+          <Link to="/" className="flex items-center">{/* ... keep existing code */}
             <h1 className="text-2xl font-display font-bold text-primary">AEVUM</h1>
             <span className="ml-2 text-sm text-foreground-muted">Medical Longevity</span>
-          </div>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {navigation.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
-              >
-                {item.name}
-              </a>
+              <div key={item.name} className="relative group">
+                {item.submenu ? (
+                  <button className="text-foreground hover:text-primary transition-colors duration-200 font-medium">
+                    {item.name}
+                  </button>
+                ) : (
+                  <a
+                    href={item.href}
+                    className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
+                  >
+                    {item.name}
+                  </a>
+                )}
+                {item.submenu && (
+                  <div className="absolute top-full left-0 mt-2 w-48 bg-background border border-card-border rounded-lg shadow-card opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    {item.submenu.map((subItem) => (
+                      <Link
+                        key={subItem.name}
+                        to={subItem.href}
+                        className="block px-4 py-2 text-sm text-foreground hover:text-primary hover:bg-accent transition-colors first:rounded-t-lg last:rounded-b-lg"
+                      >
+                        {subItem.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
             ))}
           </nav>
 
