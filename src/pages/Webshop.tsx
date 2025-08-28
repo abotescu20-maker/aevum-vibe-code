@@ -8,6 +8,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ShoppingCart, QrCode, Gift, MapPin, Star, Filter } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import CartModal from "@/components/webshop/CartModal";
+import QRScanner from "@/components/webshop/QRScanner";
+
+// Import product images
+import vitaminCSerum from "@/assets/products/vitamin-c-serum.jpg";
+import nightCream from "@/assets/products/night-cream.jpg";
+import sunscreen from "@/assets/products/sunscreen.jpg";
+import nadSupplement from "@/assets/products/nad-supplement.jpg";
+import omega3 from "@/assets/products/omega3.jpg";
+import probiotics from "@/assets/products/probiotics.jpg";
+import longevityVoucher from "@/assets/products/longevity-voucher.jpg";
+import ivTherapyVoucher from "@/assets/products/iv-therapy-voucher.jpg";
 
 const clinics = [
   { id: "cluj", name: "Cluj-Napoca", address: "Str. Memorandumului 28" },
@@ -24,7 +36,7 @@ const products = {
       price: 189,
       originalPrice: 220,
       category: "Îngrijire facială",
-      image: "/api/placeholder/300/300",
+      image: vitaminCSerum,
       rating: 4.8,
       reviews: 127,
       stock: { cluj: 12, iasi: 8, galati: 5, bucuresti: 15 },
@@ -35,7 +47,7 @@ const products = {
       name: "Cremă Regenerantă Nocturnă",
       price: 245,
       category: "Îngrijire facială",
-      image: "/api/placeholder/300/300",
+      image: nightCream,
       rating: 4.9,
       reviews: 89,
       stock: { cluj: 7, iasi: 12, galati: 9, bucuresti: 20 },
@@ -46,7 +58,7 @@ const products = {
       name: "Protecție Solară SPF 50+",
       price: 95,
       category: "Protecție solară",
-      image: "/api/placeholder/300/300",
+      image: sunscreen,
       rating: 4.7,
       reviews: 203,
       stock: { cluj: 25, iasi: 18, galati: 15, bucuresti: 30 },
@@ -59,7 +71,7 @@ const products = {
       name: "NAD+ Longevity Complex",
       price: 320,
       category: "Longevitate",
-      image: "/api/placeholder/300/300",
+      image: nadSupplement,
       rating: 4.9,
       reviews: 156,
       stock: { cluj: 15, iasi: 10, galati: 8, bucuresti: 25 },
@@ -70,7 +82,7 @@ const products = {
       name: "Omega-3 Premium",
       price: 145,
       category: "Cardiovascular",
-      image: "/api/placeholder/300/300",
+      image: omega3,
       rating: 4.6,
       reviews: 98,
       stock: { cluj: 20, iasi: 15, galati: 12, bucuresti: 18 },
@@ -81,7 +93,7 @@ const products = {
       name: "Probiotice Avansate",
       price: 185,
       category: "Digestiv",
-      image: "/api/placeholder/300/300",
+      image: probiotics,
       rating: 4.8,
       reviews: 234,
       stock: { cluj: 18, iasi: 22, galati: 14, bucuresti: 28 },
@@ -94,7 +106,7 @@ const products = {
       name: "Voucher Evaluare Longevitate",
       price: 500,
       category: "Servicii",
-      image: "/api/placeholder/300/300",
+      image: longevityVoucher,
       rating: 5.0,
       reviews: 45,
       stock: { cluj: 999, iasi: 999, galati: 999, bucuresti: 999 },
@@ -106,7 +118,7 @@ const products = {
       price: 1200,
       originalPrice: 1400,
       category: "Servicii",
-      image: "/api/placeholder/300/300",
+      image: ivTherapyVoucher,
       rating: 4.9,
       reviews: 67,
       stock: { cluj: 999, iasi: 999, galati: 999, bucuresti: 999 },
@@ -123,7 +135,21 @@ const Webshop = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const addToCart = (product: any) => {
-    setCart([...cart, { ...product, quantity: 1, clinic: selectedClinic }]);
+    const existingItem = cart.find(item => item.id === product.id && item.clinic === selectedClinic);
+    
+    if (existingItem) {
+      setCart(cart.map(item => 
+        item.id === product.id && item.clinic === selectedClinic
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      ));
+    } else {
+      setCart([...cart, { ...product, quantity: 1, clinic: selectedClinic }]);
+    }
+  };
+
+  const getAllProducts = () => {
+    return Object.values(products).flat();
   };
 
   const getStockForClinic = (product: any) => {
@@ -180,12 +206,11 @@ const Webshop = () => {
               Scanează QR Produs
             </Button>
             
-            {cart.length > 0 && (
-              <Button className="flex items-center gap-2">
-                <ShoppingCart className="h-4 w-4" />
-                Coș ({cart.length})
-              </Button>
-            )}
+            <CartModal 
+              cart={cart} 
+              setCart={setCart} 
+              clinics={clinics}
+            />
           </div>
         </div>
 
@@ -203,27 +228,13 @@ const Webshop = () => {
           </Button>
         </div>
 
-        {/* QR Scanner Mock */}
-        {showQRScanner && (
-          <Card className="mb-6 bg-primary/5 border-primary/20">
-            <CardContent className="pt-6">
-              <div className="text-center">
-                <QrCode className="h-12 w-12 mx-auto mb-4 text-primary" />
-                <h3 className="text-lg font-semibold mb-2">Scanner QR Activ</h3>
-                <p className="text-muted-foreground">
-                  Îndreptează camera către codul QR de pe produs pentru a-l adăuga rapid în coș
-                </p>
-                <Button 
-                  variant="outline" 
-                  className="mt-4"
-                  onClick={() => setShowQRScanner(false)}
-                >
-                  Închide Scanner
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
+        {/* QR Scanner */}
+        <QRScanner
+          isActive={showQRScanner}
+          onClose={() => setShowQRScanner(false)}
+          onProductFound={addToCart}
+          products={getAllProducts()}
+        />
 
         {/* Product Categories */}
         <Tabs value={activeCategory} onValueChange={setActiveCategory} className="mb-8">
