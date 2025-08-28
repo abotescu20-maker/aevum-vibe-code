@@ -9,6 +9,8 @@ import IVTherapy from "./pages/IVTherapy";
 import Dermatology from "./pages/Dermatology";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Webshop from "./pages/Webshop";
+import InventoryManagement from "./pages/InventoryManagement";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +28,8 @@ const App = () => (
             <Route path="/dermatologie" element={<Dermatology />} />
             <Route path="/login" element={<Login />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/webshop" element={<Webshop />} />
+            <Route path="/inventory" element={<InventoryManagement />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

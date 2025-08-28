@@ -17,6 +17,7 @@ const Header = () => {
         { name: "Neuromodulare", href: "/neuromodulare" }
       ]
     },
+    { name: "Webshop", href: "/webshop" },
     { name: "Evaluări", href: "#assessments" },
     { name: "Despre", href: "#about" },
     { name: "Contact", href: "#contact" },
@@ -62,12 +63,12 @@ const Header = () => {
                     {item.name}
                   </button>
                 ) : (
-                  <a
-                    href={item.href}
+                  <Link
+                    to={item.href}
                     className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
                   >
                     {item.name}
-                  </a>
+                  </Link>
                 )}
                 {item.submenu && (
                   <div className="absolute top-full left-0 mt-2 w-48 bg-background border border-card-border rounded-lg shadow-card opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
@@ -86,13 +87,16 @@ const Header = () => {
             ))}
           </nav>
 
-          <div className="hidden md:flex items-center space-x-3">
-            <Button variant="outline">Programează</Button>
-            <Button variant="medical">Evaluare Gratuită</Button>
-            <Link to="/login">
-              <Button variant="ghost">Portal Pacient</Button>
-            </Link>
-          </div>
+            <div className="hidden md:flex items-center space-x-3">
+              <Button variant="outline">Programează</Button>
+              <Button variant="medical">Evaluare Gratuită</Button>
+              <Link to="/inventory">
+                <Button variant="ghost">Gestionare</Button>
+              </Link>
+              <Link to="/login">
+                <Button variant="ghost">Portal Pacient</Button>
+              </Link>
+            </div>
 
           {/* Mobile menu button */}
           <button
@@ -108,14 +112,14 @@ const Header = () => {
           <div className="md:hidden mt-4 pb-4 border-t border-card-border">
             <nav className="flex flex-col space-y-4 mt-4">
               {navigation.map((item) => (
-                <a
+                <Link
                   key={item.name}
-                  href={item.href}
+                  to={item.href}
                   className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
-                </a>
+                </Link>
               ))}
               <div className="flex flex-col space-y-2 pt-4">
                 <Button variant="outline" onClick={() => setIsMenuOpen(false)}>
