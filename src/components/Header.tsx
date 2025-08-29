@@ -96,6 +96,9 @@ const Header = () => {
               <Link to="/login">
                 <Button variant="ghost">Portal Pacient</Button>
               </Link>
+              <Link to="/seller-login">
+                <Button variant="ghost">Portal Vânzători</Button>
+              </Link>
             </div>
 
           {/* Mobile menu button */}

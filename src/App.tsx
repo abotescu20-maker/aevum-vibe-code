@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
+import { SellerAuthProvider } from "./contexts/SellerAuthContext";
 import Index from "./pages/Index";
 import IVTherapy from "./pages/IVTherapy";
 import Dermatology from "./pages/Dermatology";
@@ -11,6 +12,8 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Webshop from "./pages/Webshop";
 import InventoryManagement from "./pages/InventoryManagement";
+import SellerLogin from "./pages/SellerLogin";
+import SellerDashboard from "./pages/SellerDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -19,21 +22,25 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/terapii-iv" element={<IVTherapy />} />
-            <Route path="/dermatologie" element={<Dermatology />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/webshop" element={<Webshop />} />
-            <Route path="/inventory" element={<InventoryManagement />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <SellerAuthProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/terapii-iv" element={<IVTherapy />} />
+              <Route path="/dermatologie" element={<Dermatology />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/webshop" element={<Webshop />} />
+              <Route path="/inventory" element={<InventoryManagement />} />
+              <Route path="/seller-login" element={<SellerLogin />} />
+              <Route path="/seller-dashboard" element={<SellerDashboard />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </SellerAuthProvider>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
