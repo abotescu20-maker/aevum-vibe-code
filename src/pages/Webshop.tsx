@@ -268,7 +268,7 @@ const Webshop = () => {
                     <div className="flex items-center gap-2 mb-2">
                       <Badge variant="secondary">{product.category}</Badge>
                       <div className="flex items-center gap-1 ml-auto">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <Star className="h-4 w-4 fill-accent-gold text-accent-gold" />
                         <span className="text-sm font-medium">{product.rating}</span>
                         <span className="text-sm text-muted-foreground">({product.reviews})</span>
                       </div>
@@ -296,7 +296,7 @@ const Webshop = () => {
                         Stoc {clinics.find(c => c.id === selectedClinic)?.name}: {getStockForClinic(product)}
                       </span>
                       {getStockForClinic(product) > 0 ? (
-                        <Badge variant="default" className="bg-green-100 text-green-800">
+                        <Badge variant="default" className="bg-primary/10 text-primary border-primary/20">
                           Disponibil
                         </Badge>
                       ) : (
