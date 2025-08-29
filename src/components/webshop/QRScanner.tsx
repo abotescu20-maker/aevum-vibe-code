@@ -111,12 +111,15 @@ const QRScanner = ({ isActive, onClose, onProductFound, products }: QRScannerPro
           
           <div>
             <h3 className="text-lg font-semibold mb-2">Scanner QR Produse</h3>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-muted-foreground mb-2">
               {scanStatus === 'idle' && "Îndreptează camera către codul QR de pe produs"}
               {scanStatus === 'scanning' && "Scanez codul QR..."}
               {scanStatus === 'found' && "Produs găsit! Adaugă în coș?"}
               {scanStatus === 'error' && "Cod QR invalid. Încearcă din nou."}
             </p>
+            <div className="text-xs text-primary bg-primary/10 rounded-lg p-2 mb-4 border border-primary/20">
+              <strong>📊 Monitorizare:</strong> Această scanare va fi înregistrată și asociată cu angajatul din clinică pentru raportarea vânzărilor.
+            </div>
           </div>
           
           <div className="flex flex-wrap gap-2 justify-center">

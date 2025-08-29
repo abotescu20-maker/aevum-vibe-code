@@ -5,11 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ShoppingCart, QrCode, Gift, MapPin, Star, Filter } from "lucide-react";
+import { ShoppingCart, QrCode, Gift, MapPin, Star, Filter, BarChart3 } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartModal from "@/components/webshop/CartModal";
 import QRScanner from "@/components/webshop/QRScanner";
+import SalesTracking from "@/components/webshop/SalesTracking";
 
 // Import product images
 import vitaminCSerum from "@/assets/products/vitamin-c-serum.jpg";
@@ -132,6 +133,7 @@ const Webshop = () => {
   const [activeCategory, setActiveCategory] = useState("dermato-cosmetice");
   const [cart, setCart] = useState<any[]>([]);
   const [showQRScanner, setShowQRScanner] = useState(false);
+  const [showSalesTracking, setShowSalesTracking] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
   const addToCart = (product: any) => {
@@ -195,8 +197,8 @@ const Webshop = () => {
             </Select>
           </div>
 
-          {/* QR Code Scanner */}
-          <div className="flex gap-4 justify-center items-center">
+          {/* Actions */}
+          <div className="flex flex-wrap gap-4 justify-center items-center">
             <Button
               variant="outline"
               onClick={() => setShowQRScanner(!showQRScanner)}
@@ -204,6 +206,15 @@ const Webshop = () => {
             >
               <QrCode className="h-4 w-4" />
               Scanează QR Produs
+            </Button>
+            
+            <Button
+              variant="outline"
+              onClick={() => setShowSalesTracking(!showSalesTracking)}
+              className="flex items-center gap-2"
+            >
+              <BarChart3 className="h-4 w-4" />
+              Evidență Vânzări
             </Button>
             
             <CartModal 
@@ -235,6 +246,13 @@ const Webshop = () => {
           onProductFound={addToCart}
           products={getAllProducts()}
         />
+
+        {/* Sales Tracking */}
+        {showSalesTracking && (
+          <div className="mb-8">
+            <SalesTracking clinics={clinics} />
+          </div>
+        )}
 
         {/* Product Categories */}
         <Tabs value={activeCategory} onValueChange={setActiveCategory} className="mb-8">
@@ -321,30 +339,26 @@ const Webshop = () => {
           </TabsContent>
         </Tabs>
 
-        {/* Sales Incentives Info */}
+        {/* QR Sales Tracking */}
         <Card className="mt-8 bg-gradient-subtle border-primary/20">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Star className="h-5 w-5 text-primary" />
-              Program Incentive Vânzări
+              <QrCode className="h-5 w-5 text-primary" />
+              Monitorizare Vânzări QR Code
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground mb-4">
-              Pentru personalul clinicilor: Câștigă comision la fiecare vânzare generată prin codul tău QR!
+              Fiecare cod QR este asociat cu un angajat din clinică. Toate vânzările sunt monitorizate și raportate în timp real.
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="text-center p-4 bg-background rounded-lg">
-                <div className="text-2xl font-bold text-primary mb-2">5%</div>
-                <div className="text-sm text-muted-foreground">Comision Produse</div>
+                <div className="text-lg font-bold text-primary mb-2">Tracking Complet</div>
+                <div className="text-sm text-muted-foreground">Fiecare scanare QR este înregistrată</div>
               </div>
               <div className="text-center p-4 bg-background rounded-lg">
-                <div className="text-2xl font-bold text-primary mb-2">3%</div>
-                <div className="text-sm text-muted-foreground">Comision Vouchere</div>
-              </div>
-              <div className="text-center p-4 bg-background rounded-lg">
-                <div className="text-2xl font-bold text-primary mb-2">500 lei</div>
-                <div className="text-sm text-muted-foreground">Bonus lunar &gt;10 vânzări</div>
+                <div className="text-lg font-bold text-primary mb-2">Rapoarte Live</div>
+                <div className="text-sm text-muted-foreground">Monitorizare în timp real a performanței</div>
               </div>
             </div>
           </CardContent>
