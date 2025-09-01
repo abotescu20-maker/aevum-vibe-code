@@ -1,11 +1,12 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ShoppingCart, QrCode, Gift, MapPin, Star, Filter, BarChart3 } from "lucide-react";
+import { ShoppingCart, QrCode, Gift, MapPin, Star, Filter, BarChart3, Settings, UserCog } from "lucide-react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CartModal from "@/components/webshop/CartModal";
@@ -130,11 +131,12 @@ const products = {
 
 const Webshop = () => {
   const [selectedClinic, setSelectedClinic] = useState("bucuresti");
-  const [activeCategory, setActiveCategory] = useState("dermato-cosmetice");
+  const [activeCategory, setActiveCategory] = useState("produse");
   const [cart, setCart] = useState<any[]>([]);
   const [showQRScanner, setShowQRScanner] = useState(false);
   const [showSalesTracking, setShowSalesTracking] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [productCategory, setProductCategory] = useState("dermato-cosmetice");
 
   const addToCart = (product: any) => {
     const existingItem = cart.find(item => item.id === product.id && item.clinic === selectedClinic);
@@ -158,7 +160,7 @@ const Webshop = () => {
     return product.stock[selectedClinic] || 0;
   };
 
-  const filteredProducts = products[activeCategory as keyof typeof products]?.filter(product =>
+  const filteredProducts = products[productCategory as keyof typeof products]?.filter(product =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.description.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
@@ -254,115 +256,190 @@ const Webshop = () => {
           </div>
         )}
 
-        {/* Product Categories */}
+        {/* Main Navigation Tabs */}
         <Tabs value={activeCategory} onValueChange={setActiveCategory} className="mb-8">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="dermato-cosmetice">Dermato-Cosmetice</TabsTrigger>
-            <TabsTrigger value="suplimente">Suplimente</TabsTrigger>
-            <TabsTrigger value="vouchere">
-              <Gift className="h-4 w-4 mr-2" />
-              Vouchere Cadou
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="produse">
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              Produse
+            </TabsTrigger>
+            <TabsTrigger value="vanzari">
+              <BarChart3 className="h-4 w-4 mr-2" />
+              Evidență Vânzări
+            </TabsTrigger>
+            <TabsTrigger value="portal-vanzatori">
+              <UserCog className="h-4 w-4 mr-2" />
+              Portal Vânzători
+            </TabsTrigger>
+            <TabsTrigger value="gestionare">
+              <Settings className="h-4 w-4 mr-2" />
+              Gestionare
             </TabsTrigger>
           </TabsList>
 
-          {/* Products Grid */}
-          <TabsContent value={activeCategory} className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProducts.map(product => (
-                <Card key={product.id} className="group hover:shadow-glow transition-all duration-300">
-                  <CardHeader className="pb-2">
-                    <div className="aspect-square bg-muted rounded-lg mb-4 relative overflow-hidden">
-                      <img 
-                        src={product.image} 
-                        alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      {(product as any).originalPrice && (
-                        <Badge className="absolute top-2 right-2 bg-destructive">
-                          -{Math.round((1 - product.price / (product as any).originalPrice) * 100)}%
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge variant="secondary">{product.category}</Badge>
-                      <div className="flex items-center gap-1 ml-auto">
-                        <Star className="h-4 w-4 fill-accent-gold text-accent-gold" />
-                        <span className="text-sm font-medium">{product.rating}</span>
-                        <span className="text-sm text-muted-foreground">({product.reviews})</span>
-                      </div>
-                    </div>
-                    <CardTitle className="text-lg mb-1">{product.name}</CardTitle>
-                    <CardDescription className="line-clamp-2">
-                      {product.description}
-                    </CardDescription>
-                  </CardHeader>
-                  
-                  <CardContent>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-2">
-                        <span className="text-2xl font-bold text-primary">{product.price} lei</span>
-                        {(product as any).originalPrice && (
-                          <span className="text-lg text-muted-foreground line-through">
-                            {(product as any).originalPrice} lei
+          {/* Products Section */}
+          <TabsContent value="produse" className="mt-6">
+            {/* Product Categories */}
+            <Tabs value={productCategory} onValueChange={setProductCategory} className="mb-6">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="dermato-cosmetice">Dermato-Cosmetice</TabsTrigger>
+                <TabsTrigger value="suplimente">Suplimente</TabsTrigger>
+                <TabsTrigger value="vouchere">
+                  <Gift className="h-4 w-4 mr-2" />
+                  Vouchere Cadou
+                </TabsTrigger>
+              </TabsList>
+
+              {/* Products Grid */}
+              <TabsContent value={productCategory} className="mt-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredProducts.map(product => (
+                    <Card key={product.id} className="group hover:shadow-glow transition-all duration-300">
+                      <CardHeader className="pb-2">
+                        <div className="aspect-square bg-muted rounded-lg mb-4 relative overflow-hidden">
+                          <img 
+                            src={product.image} 
+                            alt={product.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                          {(product as any).originalPrice && (
+                            <Badge className="absolute top-2 right-2 bg-destructive">
+                              -{Math.round((1 - product.price / (product as any).originalPrice) * 100)}%
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="secondary">{product.category}</Badge>
+                          <div className="flex items-center gap-1 ml-auto">
+                            <Star className="h-4 w-4 fill-accent-gold text-accent-gold" />
+                            <span className="text-sm font-medium">{product.rating}</span>
+                            <span className="text-sm text-muted-foreground">({product.reviews})</span>
+                          </div>
+                        </div>
+                        <CardTitle className="text-lg mb-1">{product.name}</CardTitle>
+                        <CardDescription className="line-clamp-2">
+                          {product.description}
+                        </CardDescription>
+                      </CardHeader>
+                      
+                      <CardContent>
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-2">
+                            <span className="text-2xl font-bold text-primary">{product.price} lei</span>
+                            {(product as any).originalPrice && (
+                              <span className="text-lg text-muted-foreground line-through">
+                                {(product as any).originalPrice} lei
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between mb-4">
+                          <span className="text-sm text-muted-foreground">
+                            Stoc {clinics.find(c => c.id === selectedClinic)?.name}: {getStockForClinic(product)}
                           </span>
-                        )}
+                          {getStockForClinic(product) > 0 ? (
+                            <Badge variant="default" className="bg-primary/10 text-primary border-primary/20">
+                              Disponibil
+                            </Badge>
+                          ) : (
+                            <Badge variant="destructive">
+                              Indisponibil
+                            </Badge>
+                          )}
+                        </div>
+                        
+                        <Button 
+                          className="w-full"
+                          onClick={() => addToCart(product)}
+                          disabled={getStockForClinic(product) === 0}
+                        >
+                          <ShoppingCart className="h-4 w-4 mr-2" />
+                          {getStockForClinic(product) > 0 ? "Adaugă în Coș" : "Indisponibil"}
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </TabsContent>
+
+          {/* Sales Tracking Section */}
+          <TabsContent value="vanzari" className="mt-6">
+            <SalesTracking clinics={clinics} />
+          </TabsContent>
+
+          {/* Seller Portal Section */}
+          <TabsContent value="portal-vanzatori" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Portal Vânzători</CardTitle>
+                <CardDescription>
+                  Accesează contul tău de vânzător pentru a vizualiza comisioanele și să generezi facturi
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Link to="/seller-login">
+                    <Button className="w-full h-24 flex-col">
+                      <UserCog className="h-8 w-8 mb-2" />
+                      Autentificare Vânzător
+                    </Button>
+                  </Link>
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowQRScanner(!showQRScanner)}
+                    className="w-full h-24 flex-col"
+                  >
+                    <QrCode className="h-8 w-8 mb-2" />
+                    Scanează QR Produs
+                  </Button>
+                </div>
+                
+                <Card className="bg-gradient-subtle border-primary/20">
+                  <CardContent className="p-6">
+                    <h3 className="text-lg font-semibold mb-2">Monitorizare Vânzări QR Code</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Fiecare cod QR este asociat cu un angajat din clinică. Toate vânzările sunt monitorizate și raportate în timp real.
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="text-center p-4 bg-background rounded-lg">
+                        <div className="text-lg font-bold text-primary mb-2">Tracking Complet</div>
+                        <div className="text-sm text-muted-foreground">Fiecare scanare QR este înregistrată</div>
+                      </div>
+                      <div className="text-center p-4 bg-background rounded-lg">
+                        <div className="text-lg font-bold text-primary mb-2">Rapoarte Live</div>
+                        <div className="text-sm text-muted-foreground">Monitorizare în timp real a performanței</div>
                       </div>
                     </div>
-                    
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-sm text-muted-foreground">
-                        Stoc {clinics.find(c => c.id === selectedClinic)?.name}: {getStockForClinic(product)}
-                      </span>
-                      {getStockForClinic(product) > 0 ? (
-                        <Badge variant="default" className="bg-primary/10 text-primary border-primary/20">
-                          Disponibil
-                        </Badge>
-                      ) : (
-                        <Badge variant="destructive">
-                          Indisponibil
-                        </Badge>
-                      )}
-                    </div>
-                    
-                    <Button 
-                      className="w-full"
-                      onClick={() => addToCart(product)}
-                      disabled={getStockForClinic(product) === 0}
-                    >
-                      <ShoppingCart className="h-4 w-4 mr-2" />
-                      {getStockForClinic(product) > 0 ? "Adaugă în Coș" : "Indisponibil"}
-                    </Button>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Management Section */}
+          <TabsContent value="gestionare" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Gestionare Stocuri</CardTitle>
+                <CardDescription>
+                  Administrează inventarul și comenzile din toate clinicile
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Link to="/inventory">
+                  <Button className="w-full h-24 flex-col">
+                    <Settings className="h-8 w-8 mb-2" />
+                    Acces Gestionare Stocuri
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
 
-        {/* QR Sales Tracking */}
-        <Card className="mt-8 bg-gradient-subtle border-primary/20">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <QrCode className="h-5 w-5 text-primary" />
-              Monitorizare Vânzări QR Code
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground mb-4">
-              Fiecare cod QR este asociat cu un angajat din clinică. Toate vânzările sunt monitorizate și raportate în timp real.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="text-center p-4 bg-background rounded-lg">
-                <div className="text-lg font-bold text-primary mb-2">Tracking Complet</div>
-                <div className="text-sm text-muted-foreground">Fiecare scanare QR este înregistrată</div>
-              </div>
-              <div className="text-center p-4 bg-background rounded-lg">
-                <div className="text-lg font-bold text-primary mb-2">Rapoarte Live</div>
-                <div className="text-sm text-muted-foreground">Monitorizare în timp real a performanței</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </main>
 
       <Footer />
