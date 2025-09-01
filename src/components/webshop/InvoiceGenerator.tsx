@@ -9,6 +9,29 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { FileText, Download, Printer, CreditCard, Banknote } from 'lucide-react';
 
+// Helper function to convert numbers to words (simplified version)
+const numberToWords = (num: number): string => {
+  const ones = ['', 'unu', 'doi', 'trei', 'patru', 'cinci', 'șase', 'șapte', 'opt', 'nouă'];
+  const tens = ['', '', 'douăzeci', 'treizeci', 'patruzeci', 'cincizeci', 'șaizeci', 'șaptezeci', 'optzeci', 'nouăzeci'];
+  const hundreds = ['', 'una sută', 'două sute', 'trei sute', 'patru sute', 'cinci sute', 'șase sute', 'șapte sute', 'opt sute', 'nouă sute'];
+  
+  if (num === 0) return 'zero';
+  if (num < 10) return ones[num];
+  if (num < 20) {
+    const teens = ['zece', 'unsprezece', 'doisprezece', 'treisprezece', 'paisprezece', 'cincisprezece', 'șaisprezece', 'șaptesprezece', 'optsprezece', 'nouăsprezece'];
+    return teens[num - 10];
+  }
+  if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 > 0 ? ' și ' + ones[num % 10] : '');
+  if (num < 1000) {
+    const hundredPart = hundreds[Math.floor(num / 100)];
+    const remainder = num % 100;
+    return hundredPart + (remainder > 0 ? ' ' + numberToWords(remainder) : '');
+  }
+  
+  // Simplified for larger numbers
+  return Math.floor(num).toString();
+};
+
 interface InvoiceGeneratorProps {
   isOpen: boolean;
   onClose: () => void;
@@ -77,7 +100,7 @@ export const InvoiceGenerator = ({ isOpen, onClose, seller }: InvoiceGeneratorPr
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
-              Previzualizare Factură
+              Previzualizare {paymentMethod === 'cash' ? 'Chitanță' : 'Factură'}
             </DialogTitle>
           </DialogHeader>
 
@@ -93,54 +116,93 @@ export const InvoiceGenerator = ({ isOpen, onClose, seller }: InvoiceGeneratorPr
                 </p>
               </div>
               <div className="text-right">
-                <h2 className="text-xl font-bold">FACTURĂ</h2>
+                <h2 className="text-xl font-bold">
+                  {paymentMethod === 'cash' ? 'CHITANȚĂ' : 'FACTURĂ'}
+                </h2>
                 <p className="text-sm text-gray-600">
-                  Nr: INV-2024-{Date.now().toString().slice(-3)}<br />
+                  Nr: {paymentMethod === 'cash' ? 'CHT' : 'INV'}-2024-{Date.now().toString().slice(-3)}<br />
                   Data: {new Date().toLocaleDateString('ro-RO')}<br />
-                  Scadența: {new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('ro-RO')}
+                  {paymentMethod === 'card' && (
+                    <>Scadența: {new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('ro-RO')}<br /></>
+                  )}
                 </p>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-8 mb-8">
-              <div>
-                <h3 className="font-bold mb-2">Furnizor:</h3>
-                <p className="text-sm">
-                  AEVUM MEDICAL SRL<br />
-                  CUI: RO12345678<br />
-                  Reg. Com.: J40/1234/2024
-                </p>
+            {paymentMethod === 'card' ? (
+              <div className="grid grid-cols-2 gap-8 mb-8">
+                <div>
+                  <h3 className="font-bold mb-2">Furnizor:</h3>
+                  <p className="text-sm">
+                    AEVUM MEDICAL SRL<br />
+                    CUI: RO12345678<br />
+                    Reg. Com.: J40/1234/2024
+                  </p>
+                </div>
+                <div>
+                  <h3 className="font-bold mb-2">Client:</h3>
+                  <p className="text-sm">
+                    {customerName}<br />
+                    {customerEmail}<br />
+                    {customerPhone}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-bold mb-2">Client:</h3>
-                <p className="text-sm">
-                  {customerName}<br />
-                  {customerEmail}<br />
-                  {customerPhone}
-                </p>
+            ) : (
+              <div className="mb-8">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="font-bold mb-2">Am primit de la:</h3>
+                    <p className="text-sm">
+                      {customerName}<br />
+                      {customerPhone}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <h3 className="font-bold mb-2">Suma:</h3>
+                    <p className="text-xl font-bold">{total.toFixed(2)} RON</p>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
 
-            <table className="w-full mb-8 border-collapse border border-gray-300">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="border border-gray-300 p-2 text-left">Produs/Serviciu</th>
-                  <th className="border border-gray-300 p-2 text-center">Cant.</th>
-                  <th className="border border-gray-300 p-2 text-right">Preț unitar</th>
-                  <th className="border border-gray-300 p-2 text-right">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((item, index) => (
-                  <tr key={index}>
-                    <td className="border border-gray-300 p-2">{item.name}</td>
-                    <td className="border border-gray-300 p-2 text-center">{item.quantity}</td>
-                    <td className="border border-gray-300 p-2 text-right">{item.price.toFixed(2)} RON</td>
-                    <td className="border border-gray-300 p-2 text-right">{item.total.toFixed(2)} RON</td>
+            {paymentMethod === 'card' ? (
+              <table className="w-full mb-8 border-collapse border border-gray-300">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="border border-gray-300 p-2 text-left">Produs/Serviciu</th>
+                    <th className="border border-gray-300 p-2 text-center">Cant.</th>
+                    <th className="border border-gray-300 p-2 text-right">Preț unitar</th>
+                    <th className="border border-gray-300 p-2 text-right">Total</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {items.map((item, index) => (
+                    <tr key={index}>
+                      <td className="border border-gray-300 p-2">{item.name}</td>
+                      <td className="border border-gray-300 p-2 text-center">{item.quantity}</td>
+                      <td className="border border-gray-300 p-2 text-right">{item.price.toFixed(2)} RON</td>
+                      <td className="border border-gray-300 p-2 text-right">{item.total.toFixed(2)} RON</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <div className="mb-8">
+                <h3 className="font-bold mb-4">Pentru:</h3>
+                <div className="space-y-2">
+                  {items.map((item, index) => (
+                    <div key={index} className="flex justify-between items-center py-2 border-b border-gray-200">
+                      <div>
+                        <span className="font-medium">{item.name}</span>
+                        <span className="text-gray-600 ml-2">x{item.quantity}</span>
+                      </div>
+                      <span className="font-bold">{item.total.toFixed(2)} RON</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="flex justify-between items-start">
               <div className="flex items-center gap-2">
@@ -148,7 +210,7 @@ export const InvoiceGenerator = ({ isOpen, onClose, seller }: InvoiceGeneratorPr
                   {paymentMethod === 'cash' ? (
                     <>
                       <Banknote className="h-4 w-4 mr-1" />
-                      Plată Cash
+                      Plată Numerar
                     </>
                   ) : (
                     <>
@@ -160,19 +222,31 @@ export const InvoiceGenerator = ({ isOpen, onClose, seller }: InvoiceGeneratorPr
               </div>
               
               <div className="text-right">
-                <div className="flex justify-between w-48 mb-2">
-                  <span>Subtotal:</span>
-                  <span>{subtotal.toFixed(2)} RON</span>
-                </div>
-                <div className="flex justify-between w-48 mb-2">
-                  <span>TVA (19%):</span>
-                  <span>{tva.toFixed(2)} RON</span>
-                </div>
-                <Separator className="my-2" />
-                <div className="flex justify-between w-48 font-bold text-lg">
-                  <span>TOTAL:</span>
-                  <span>{total.toFixed(2)} RON</span>
-                </div>
+                {paymentMethod === 'card' ? (
+                  <>
+                    <div className="flex justify-between w-48 mb-2">
+                      <span>Subtotal:</span>
+                      <span>{subtotal.toFixed(2)} RON</span>
+                    </div>
+                    <div className="flex justify-between w-48 mb-2">
+                      <span>TVA (19%):</span>
+                      <span>{tva.toFixed(2)} RON</span>
+                    </div>
+                    <Separator className="my-2" />
+                    <div className="flex justify-between w-48 font-bold text-lg">
+                      <span>TOTAL:</span>
+                      <span>{total.toFixed(2)} RON</span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center">
+                    <p className="text-sm mb-2">Suma totală încasată:</p>
+                    <div className="text-3xl font-bold border-2 border-black p-4 rounded">
+                      {total.toFixed(2)} RON
+                    </div>
+                    <p className="text-xs mt-2 italic">cu litere: {numberToWords(total)} lei</p>
+                  </div>
+                )}
                 <div className="flex justify-between w-48 text-sm text-primary mt-2">
                   <span>Comision vânzător:</span>
                   <span>{commission.toFixed(2)} RON</span>
@@ -181,8 +255,18 @@ export const InvoiceGenerator = ({ isOpen, onClose, seller }: InvoiceGeneratorPr
             </div>
 
             <div className="mt-8 text-sm text-gray-600">
-              <p><strong>Vânzător:</strong> {seller.firstName} {seller.lastName}</p>
-              <p><strong>Data/Ora:</strong> {new Date().toLocaleString('ro-RO')}</p>
+              <div className="flex justify-between items-end">
+                <div>
+                  <p><strong>Vânzător:</strong> {seller.firstName} {seller.lastName}</p>
+                  <p><strong>Data/Ora:</strong> {new Date().toLocaleString('ro-RO')}</p>
+                </div>
+                {paymentMethod === 'cash' && (
+                  <div className="text-right">
+                    <p className="mb-8">Semnătura:</p>
+                    <div className="border-b border-gray-400 w-32"></div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -207,12 +291,12 @@ export const InvoiceGenerator = ({ isOpen, onClose, seller }: InvoiceGeneratorPr
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
-            Generare Factură Nouă
-          </DialogTitle>
-        </DialogHeader>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Generare {paymentMethod === 'cash' ? 'Chitanță' : 'Factură'} Nouă
+            </DialogTitle>
+          </DialogHeader>
 
         <div className="space-y-6">
           <Card>
@@ -358,7 +442,7 @@ export const InvoiceGenerator = ({ isOpen, onClose, seller }: InvoiceGeneratorPr
 
           <div className="flex gap-4">
             <Button onClick={generateInvoice} className="flex-1" disabled={!customerName || items.some(item => !item.name)}>
-              Generează Factură
+              Generează {paymentMethod === 'cash' ? 'Chitanță' : 'Factură'}
             </Button>
             <Button onClick={onClose} variant="outline">
               Anulează
