@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { User, Session } from '@supabase/supabase-js';
 
 interface Patient {
   id: string;
@@ -7,13 +9,16 @@ interface Patient {
   lastName: string;
   phone: string;
   dateOfBirth: string;
+  role: string;
 }
 
 interface AuthContextType {
+  user: User | null;
+  session: Session | null;
   patient: Patient | null;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
-  signup: (data: SignupData) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<{ error?: string }>;
+  signup: (data: SignupData) => Promise<{ error?: string }>;
   logout: () => void;
   loading: boolean;
 }
@@ -38,74 +43,112 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [patient, setPatient] = useState<Patient | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing session
-    const savedPatient = localStorage.getItem('aevum_patient');
-    if (savedPatient) {
-      setPatient(JSON.parse(savedPatient));
-    }
-    setLoading(false);
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          // Fetch user profile
+          setTimeout(async () => {
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('user_id', session.user.id)
+              .single();
+            
+            if (profile) {
+              setPatient({
+                id: profile.id,
+                email: profile.email,
+                firstName: profile.first_name || '',
+                lastName: profile.last_name || '',
+                phone: profile.phone || '',
+                dateOfBirth: profile.date_of_birth || '',
+                role: profile.role || 'patient'
+              });
+            }
+          }, 0);
+        } else {
+          setPatient(null);
+        }
+        
+        setLoading(false);
+      }
+    );
+
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string) => {
     setLoading(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Mock authentication - in real app this would call your API
-    if (email && password.length >= 6) {
-      const mockPatient: Patient = {
-        id: '1',
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
         email,
-        firstName: 'Ion',
-        lastName: 'Popescu',
-        phone: '+40 XXX XXX XXX',
-        dateOfBirth: '1985-03-15'
-      };
+        password,
+      });
       
-      setPatient(mockPatient);
-      localStorage.setItem('aevum_patient', JSON.stringify(mockPatient));
       setLoading(false);
-      return true;
+      return { error: error?.message };
+    } catch (err) {
+      setLoading(false);
+      return { error: 'A apărut o eroare la autentificare' };
     }
-    
-    setLoading(false);
-    return false;
   };
 
-  const signup = async (data: SignupData): Promise<boolean> => {
+  const signup = async (data: SignupData) => {
     setLoading(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    const newPatient: Patient = {
-      id: Date.now().toString(),
-      email: data.email,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      phone: data.phone,
-      dateOfBirth: data.dateOfBirth
-    };
-    
-    setPatient(newPatient);
-    localStorage.setItem('aevum_patient', JSON.stringify(newPatient));
-    setLoading(false);
-    return true;
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            first_name: data.firstName,
+            last_name: data.lastName,
+            phone: data.phone,
+            date_of_birth: data.dateOfBirth
+          }
+        }
+      });
+      
+      setLoading(false);
+      return { error: error?.message };
+    } catch (err) {
+      setLoading(false);
+      return { error: 'A apărut o eroare la înregistrare' };
+    }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+    setSession(null);
     setPatient(null);
-    localStorage.removeItem('aevum_patient');
   };
 
   const value = {
+    user,
+    session,
     patient,
-    isAuthenticated: !!patient,
+    isAuthenticated: !!user,
     login,
     signup,
     logout,

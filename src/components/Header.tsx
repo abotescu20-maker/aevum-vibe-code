@@ -90,7 +90,7 @@ const Header = () => {
             <div className="hidden md:flex items-center space-x-3">
               <Button variant="outline">Programează</Button>
               <Button variant="medical">Evaluare Gratuită</Button>
-              <Link to="/login">
+              <Link to="/auth">
                 <Button variant="ghost">Portal Pacient</Button>
               </Link>
             </div>
