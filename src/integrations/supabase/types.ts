@@ -14,7 +14,364 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      appointments: {
+        Row: {
+          appointment_date: string
+          clinic_id: string
+          created_at: string | null
+          duration_minutes: number | null
+          id: string
+          notes: string | null
+          patient_id: string
+          service_type: string
+          status: Database["public"]["Enums"]["appointment_status"] | null
+          updated_at: string | null
+        }
+        Insert: {
+          appointment_date: string
+          clinic_id: string
+          created_at?: string | null
+          duration_minutes?: number | null
+          id?: string
+          notes?: string | null
+          patient_id: string
+          service_type: string
+          status?: Database["public"]["Enums"]["appointment_status"] | null
+          updated_at?: string | null
+        }
+        Update: {
+          appointment_date?: string
+          clinic_id?: string
+          created_at?: string | null
+          duration_minutes?: number | null
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          service_type?: string
+          status?: Database["public"]["Enums"]["appointment_status"] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "appointments_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "appointments_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clinics: {
+        Row: {
+          address: string
+          created_at: string | null
+          email: string | null
+          id: string
+          name: string
+          phone: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          address: string
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          name: string
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          name?: string
+          phone?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      inventory: {
+        Row: {
+          clinic_id: string
+          id: string
+          min_stock_alert: number | null
+          product_id: string
+          stock_quantity: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          clinic_id: string
+          id?: string
+          min_stock_alert?: number | null
+          product_id: string
+          stock_quantity?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          clinic_id?: string
+          id?: string
+          min_stock_alert?: number | null
+          product_id?: string
+          stock_quantity?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          category: Database["public"]["Enums"]["product_category"]
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          name: string
+          original_price: number | null
+          price: number
+          rating: number | null
+          review_count: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          category: Database["public"]["Enums"]["product_category"]
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          name: string
+          original_price?: number | null
+          price: number
+          rating?: number | null
+          review_count?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["product_category"]
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          name?: string
+          original_price?: number | null
+          price?: number
+          rating?: number | null
+          review_count?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          clinic_id: string | null
+          commission_rate: number | null
+          created_at: string | null
+          date_of_birth: string | null
+          email: string
+          first_name: string | null
+          id: string
+          last_name: string | null
+          phone: string | null
+          role: Database["public"]["Enums"]["user_role"] | null
+          total_commission: number | null
+          total_sales: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          commission_rate?: number | null
+          created_at?: string | null
+          date_of_birth?: string | null
+          email: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          phone?: string | null
+          role?: Database["public"]["Enums"]["user_role"] | null
+          total_commission?: number | null
+          total_sales?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          clinic_id?: string | null
+          commission_rate?: number | null
+          created_at?: string | null
+          date_of_birth?: string | null
+          email?: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          phone?: string | null
+          role?: Database["public"]["Enums"]["user_role"] | null
+          total_commission?: number | null
+          total_sales?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reviews: {
+        Row: {
+          comment: string | null
+          created_at: string | null
+          id: string
+          patient_id: string
+          product_id: string
+          rating: number
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          patient_id: string
+          product_id: string
+          rating: number
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          patient_id?: string
+          product_id?: string
+          rating?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales: {
+        Row: {
+          clinic_id: string
+          commission_amount: number
+          commission_rate: number
+          created_at: string | null
+          id: string
+          invoice_number: string | null
+          notes: string | null
+          patient_id: string | null
+          payment_method: Database["public"]["Enums"]["payment_method"]
+          product_id: string | null
+          qr_code: string | null
+          quantity: number | null
+          sale_type: Database["public"]["Enums"]["sale_type"]
+          seller_id: string
+          total_amount: number
+          unit_price: number
+        }
+        Insert: {
+          clinic_id: string
+          commission_amount: number
+          commission_rate: number
+          created_at?: string | null
+          id?: string
+          invoice_number?: string | null
+          notes?: string | null
+          patient_id?: string | null
+          payment_method: Database["public"]["Enums"]["payment_method"]
+          product_id?: string | null
+          qr_code?: string | null
+          quantity?: number | null
+          sale_type: Database["public"]["Enums"]["sale_type"]
+          seller_id: string
+          total_amount: number
+          unit_price: number
+        }
+        Update: {
+          clinic_id?: string
+          commission_amount?: number
+          commission_rate?: number
+          created_at?: string | null
+          id?: string
+          invoice_number?: string | null
+          notes?: string | null
+          patient_id?: string | null
+          payment_method?: Database["public"]["Enums"]["payment_method"]
+          product_id?: string | null
+          qr_code?: string | null
+          quantity?: number | null
+          sale_type?: Database["public"]["Enums"]["sale_type"]
+          seller_id?: string
+          total_amount?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_patient_id_fkey"
+            columns: ["patient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +380,11 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      appointment_status: "pending" | "confirmed" | "completed" | "cancelled"
+      payment_method: "cash" | "card" | "transfer"
+      product_category: "dermato-cosmetice" | "suplimente" | "vouchere"
+      sale_type: "product" | "service" | "voucher"
+      user_role: "patient" | "seller" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +511,12 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      appointment_status: ["pending", "confirmed", "completed", "cancelled"],
+      payment_method: ["cash", "card", "transfer"],
+      product_category: ["dermato-cosmetice", "suplimente", "vouchere"],
+      sale_type: ["product", "service", "voucher"],
+      user_role: ["patient", "seller", "admin"],
+    },
   },
 } as const
