@@ -8,6 +8,8 @@ import { SellerAuthProvider } from "./contexts/SellerAuthContext";
 import Index from "./pages/Index";
 import IVTherapy from "./pages/IVTherapy";
 import Dermatology from "./pages/Dermatology";
+import Neuromodulare from "./pages/Neuromodulare";
+import Auth from "./pages/Auth";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Webshop from "./pages/Webshop";
@@ -30,6 +32,8 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/terapii-iv" element={<IVTherapy />} />
               <Route path="/dermatologie" element={<Dermatology />} />
+              <Route path="/neuromodulare" element={<Neuromodulare />} />
+              <Route path="/auth" element={<Auth />} />
               <Route path="/login" element={<Login />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/webshop" element={<Webshop />} />
