@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, Clock, Dna } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import heroImage from "@/assets/hero-medical.jpg";
 
 const Hero = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="pt-32 pb-20 bg-gradient-hero">
       <div className="container mx-auto px-4">
@@ -29,11 +32,20 @@ const Hero = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 mb-12">
-              <Button variant="hero" size="xl" className="group">
+              <Button 
+                variant="hero" 
+                size="xl" 
+                className="group"
+                onClick={() => navigate("/auth")}
+              >
                 Rezervă Evaluarea
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
-              <Button variant="outline" size="xl">
+              <Button 
+                variant="outline" 
+                size="xl"
+                onClick={() => navigate("/webshop")}
+              >
                 <Clock className="w-5 h-5 mr-2" />
                 Aging Clock
               </Button>

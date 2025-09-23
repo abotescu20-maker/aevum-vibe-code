@@ -1,8 +1,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Eye, Heart, Brain, ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Services = () => {
+  const navigate = useNavigate();
+
   const pillars = [
     {
       icon: Eye,
@@ -15,7 +18,8 @@ const Services = () => {
         "Red light therapy",
         "Protecție anti-aging"
       ],
-      color: "primary"
+      color: "primary",
+      route: "/dermatologie"
     },
     {
       icon: Heart,
@@ -28,7 +32,8 @@ const Services = () => {
         "Saună IR & PEMF",
         "Monitorizare biomarkeri"
       ],
-      color: "accent-gold"
+      color: "accent-gold",
+      route: "/terapii-iv"
     },
     {
       icon: Brain,
@@ -41,7 +46,8 @@ const Services = () => {
         "Analiza microbiomului",
         "Planuri personalizate"
       ],
-      color: "accent-silver"
+      color: "accent-silver",
+      route: "/neuromodulare"
     }
   ];
 
@@ -86,7 +92,11 @@ const Services = () => {
                       </li>
                     ))}
                   </ul>
-                  <Button variant="outline" className="w-full group">
+                  <Button 
+                    variant="outline" 
+                    className="w-full group"
+                    onClick={() => navigate(pillar.route)}
+                  >
                     Află Mai Mult
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
@@ -100,7 +110,11 @@ const Services = () => {
           <p className="text-foreground-muted mb-6">
             Fiecare program este personalizat în funcție de rezultatele testelor genetice și evaluărilor medicale
           </p>
-          <Button variant="medical" size="lg">
+          <Button 
+            variant="medical" 
+            size="lg"
+            onClick={() => navigate("/auth")}
+          >
             Programează Consultația Integrativă
           </Button>
         </div>
