@@ -98,6 +98,57 @@ export type Database = {
         }
         Relationships: []
       }
+      doctors: {
+        Row: {
+          bio: string | null
+          certifications: string[] | null
+          clinic_id: string | null
+          created_at: string | null
+          education: string | null
+          email: string | null
+          experience_years: number | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          name: string
+          phone: string | null
+          specialization: string
+          updated_at: string | null
+        }
+        Insert: {
+          bio?: string | null
+          certifications?: string[] | null
+          clinic_id?: string | null
+          created_at?: string | null
+          education?: string | null
+          email?: string | null
+          experience_years?: number | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          name: string
+          phone?: string | null
+          specialization: string
+          updated_at?: string | null
+        }
+        Update: {
+          bio?: string | null
+          certifications?: string[] | null
+          clinic_id?: string | null
+          created_at?: string | null
+          education?: string | null
+          email?: string | null
+          experience_years?: number | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          name?: string
+          phone?: string | null
+          specialization?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       inventory: {
         Row: {
           clinic_id: string

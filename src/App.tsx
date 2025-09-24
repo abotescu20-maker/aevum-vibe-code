@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import IVTherapy from "./pages/IVTherapy";
 import Dermatology from "./pages/Dermatology";
 import Neuromodulare from "./pages/Neuromodulare";
+import AdminDashboard from "./pages/AdminDashboard";
 import Auth from "./pages/Auth";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -36,6 +37,7 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/login" element={<Login />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/webshop" element={<Webshop />} />
               <Route path="/inventory" element={<InventoryManagement />} />
               <Route path="/seller-login" element={<SellerLogin />} />

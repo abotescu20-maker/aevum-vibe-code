@@ -2,9 +2,11 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Phone, Calendar } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { patient } = useAuth();
 
   const navigation = [
     { name: "Programe", href: "#packages" },
@@ -93,6 +95,11 @@ const Header = () => {
               <Link to="/auth">
                 <Button variant="ghost">Portal Pacient</Button>
               </Link>
+              {patient?.role === 'admin' && (
+                <Link to="/admin">
+                  <Button variant="ghost">Admin</Button>
+                </Link>
+              )}
             </div>
 
           {/* Mobile menu button */}
