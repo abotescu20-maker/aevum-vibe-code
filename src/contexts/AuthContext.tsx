@@ -51,18 +51,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Fetch user profile
+          // Fetch user profile (deferred) to avoid deadlocks
           setTimeout(async () => {
             const { data: profile } = await supabase
               .from('profiles')
               .select('*')
-              .eq('user_id', session.user.id)
-              .single();
+              .eq('user_id', session.user!.id)
+              .maybeSingle();
             
             if (profile) {
               setPatient({
@@ -74,22 +74,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 dateOfBirth: profile.date_of_birth || '',
                 role: profile.role || 'patient'
               });
+            } else {
+              setPatient(null);
             }
-            setLoading(false); // Set loading to false after profile is fetched
+            setLoading(false);
           }, 0);
         } else {
           setPatient(null);
-          setLoading(false); // Set loading to false if no user
+          setLoading(false);
         }
       }
     );
 
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Get initial session and ensure profile is loaded on first mount
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      if (!session?.user) {
-        setLoading(false); // Only set loading to false if no session
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .maybeSingle();
+        if (profile) {
+          setPatient({
+            id: profile.id,
+            email: profile.email,
+            firstName: profile.first_name || '',
+            lastName: profile.last_name || '',
+            phone: profile.phone || '',
+            dateOfBirth: profile.date_of_birth || '',
+            role: profile.role || 'patient'
+          });
+        } else {
+          setPatient(null);
+        }
+        setLoading(false);
+      } else {
+        setLoading(false);
       }
     });
 
