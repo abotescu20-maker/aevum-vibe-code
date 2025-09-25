@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 
 const Dashboard = () => {
-  const { patient, logout } = useAuth();
+  const { patient, logout, user, loading } = useAuth();
   const [chatMessage, setChatMessage] = useState("");
   const [chatHistory, setChatHistory] = useState([
     {
@@ -37,7 +37,17 @@ const Dashboard = () => {
     }
   ]);
 
-  if (!patient) {
+  // Show a loader while auth/profile is initializing
+  if (loading || (user && !patient)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-foreground-muted">
+        Se încarcă portalul...
+      </div>
+    );
+  }
+
+  // If no authenticated user, ask to login
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Card>
