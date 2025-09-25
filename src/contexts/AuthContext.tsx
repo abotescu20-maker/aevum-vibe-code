@@ -75,12 +75,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 role: profile.role || 'patient'
               });
             }
+            setLoading(false); // Set loading to false after profile is fetched
           }, 0);
         } else {
           setPatient(null);
+          setLoading(false); // Set loading to false if no user
         }
-        
-        setLoading(false);
       }
     );
 
@@ -88,7 +88,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      setLoading(false);
+      if (!session?.user) {
+        setLoading(false); // Only set loading to false if no session
+      }
     });
 
     return () => subscription.unsubscribe();
